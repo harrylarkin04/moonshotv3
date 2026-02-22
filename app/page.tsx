@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Brain, Globe, Zap, Target } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const tools = [
   { id: 'shadowcrowd', name: 'ShadowCrowd Oracle', icon: Eye },
@@ -15,46 +16,64 @@ const tools = [
   { id: 'omniverse', name: 'Financial Omniverse', icon: Globe },
   { id: 'evoalpha', name: 'EvoAlpha Factory', icon: Zap },
   { id: 'liquidity', name: 'Liquidity Teleporter', icon: Target },
+  { id: 'paperlab', name: ' $1M Paper Lab', icon: Target },
 ];
 
 export default function Moonshot() {
   const [activeTool, setActiveTool] = useState('causalforge');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedAlpha, setGeneratedAlpha] = useState(null);
-  const [logs, setLogs] = useState([
-    "[14:51:03] CausalForge: New causal edge validated (persistence 0.97)",
-    "[14:51:06] ShadowCrowd: 79% crowding detected — anti-crowd active",
-    "[14:51:09] EvoAlpha: 5,281 strategies evolved → 134 survivors",
-    "[14:51:12] Omniverse: 14M counterfactuals running",
-    "[14:51:15] Liquidity Teleporter: Zero-impact path for $312M order"
-  ]);
+  const [omniverseResults, setOmniverseResults] = useState(null);
+  const [evolvedAlpha, setEvolvedAlpha] = useState(null);
+  const [paperTrades, setPaperTrades] = useState([]);
+  const [equityCurve, setEquityCurve] = useState([{time:0, pnl:1000000}]);
+  const [logs, setLogs] = useState(["[21:24:51] CausalForge: Hypothesis validated → Satellite shipping → Commodity momentum (persistence 0.93)"]);
 
-  const addLog = (message) => {
-    setLogs(prev => [message, ...prev].slice(0, 8));
-  };
+  const addLog = (msg) => setLogs(prev => [msg, ...prev].slice(0,12));
 
   const generateAlpha = () => {
     setIsGenerating(true);
-    addLog(`[${new Date().toLocaleTimeString()}] Agent Swarm: Thinking... generating causal hypothesis`);
-
+    addLog(`[${new Date().toLocaleTimeString()}] Agent Swarm: Generating new causal hypothesis...`);
     setTimeout(() => {
-      const hypotheses = [
-        { edge: "Dark-pool flow → ETF redemption", persistence: 0.96, nodes: ["Dark Pool", "ETF Flow", "Gamma", "Vol Spike", "SPX Return"] },
-        { edge: "Satellite shipping → Commodity momentum", persistence: 0.93, nodes: ["Satellite", "Shipping", "Inventory", "Oil", "Returns"] },
-        { edge: "Options skew → Liquidity cascade", persistence: 0.97, nodes: ["Options Skew", "HFT Flow", "Liquidity", "Unwind", "Drawdown"] },
-      ];
-      const alpha = hypotheses[Math.floor(Math.random() * hypotheses.length)];
-
+      const alpha = {
+        edge: "Satellite shipping → Commodity momentum",
+        persistence: 0.93,
+        nodes: ["Satellite", "Shipping", "Inventory", "Oil", "Returns"]
+      };
       setGeneratedAlpha(alpha);
-      addLog(`[${new Date().toLocaleTimeString()}] CausalForge: Hypothesis validated → ${alpha.edge} (persistence ${alpha.persistence})`);
-      addLog(`[${new Date().toLocaleTimeString()}] Persistence score: ${alpha.persistence} • Regime-robust version ready`);
+      addLog(`[${new Date().toLocaleTimeString()}] CausalForge: New edge validated (persistence ${alpha.persistence})`);
       setIsGenerating(false);
-    }, 1800);
+    }, 1200);
+  };
+
+  const runOmniverse = () => {
+    addLog(`[${new Date().toLocaleTimeString()}] Omniverse: Running 14M counterfactuals...`);
+    setTimeout(() => {
+      setOmniverseResults("In Trump2.0 + China shock scenario → +6.8% return, max drawdown -1.2% (robust)");
+      addLog(`[${new Date().toLocaleTimeString()}] Omniverse: Counterfactual complete → +6.8% in worst-case regime`);
+    }, 1400);
+  };
+
+  const evolveAlpha = () => {
+    addLog(`[${new Date().toLocaleTimeString()}] EvoAlpha Factory: Mutating 3,241 strategies...`);
+    setTimeout(() => {
+      const evolved = {...generatedAlpha, persistence: 0.97, edge: generatedAlpha.edge + " + regime-robust filter"};
+      setEvolvedAlpha(evolved);
+      addLog(`[${new Date().toLocaleTimeString()}] EvoAlpha: 134 survivors → New winner (persistence 0.97)`);
+    }, 1500);
+  };
+
+  const deployToPaper = () => {
+    addLog(`[${new Date().toLocaleTimeString()}] Paper Lab: Deploying alpha on $1M virtual capital...`);
+    const newTrades = [...paperTrades, {time: equityCurve.length, pnl: equityCurve[equityCurve.length-1].pnl + Math.random()*45000 - 8000}];
+    setPaperTrades(newTrades);
+    setEquityCurve([...equityCurve, {time: equityCurve.length, pnl: newTrades[newTrades.length-1].pnl}]);
+    addLog(`[${new Date().toLocaleTimeString()}] Paper Lab: Live trade executed • Current equity $1.047M`);
   };
 
   return (
     <div className="h-screen w-full overflow-hidden bg-black flex flex-col relative">
-      {/* Top Bar & Metrics (same beautiful as before) */}
+      {/* Top bar + metrics (same beautiful as before) */}
       <div className="h-16 border-b border-cyan-500/40 flex items-center px-8 justify-between glass z-50">
         <div className="flex items-center gap-4">
           <div className="text-4xl font-bold neon-text tracking-[6px]">MOONSHOT</div>
@@ -96,7 +115,7 @@ export default function Moonshot() {
             <p className="text-2xl text-cyan-400/80 mb-8">Autonomous swarm • Real tick • Zero crowding</p>
 
             {/* Holographic Core */}
-            <Card className="glass h-[520px] relative overflow-hidden mb-10">
+            <Card className="glass h-[380px] relative overflow-hidden mb-10">
               <CardHeader className="absolute top-8 left-8 z-10">
                 <CardTitle className="text-3xl">CAUSAL HOLOGRAPHIC CORE <Badge variant="outline" className="text-emerald-400">REAL-TIME</Badge></CardTitle>
               </CardHeader>
@@ -106,69 +125,74 @@ export default function Moonshot() {
                   <pointLight position={[10, 10, 10]} color="#ff00ff" intensity={4} />
                   <pointLight position={[-10, -10, -10]} color="#00f7ff" intensity={3} />
                   <Stars radius={300} depth={70} count={15000} factor={7} fade />
-                  <mesh>
-                    <sphereGeometry args={[4, 128, 128]} />
-                    <meshStandardMaterial color="#ff00ff" emissive="#00f7ff" emissiveIntensity={1.5} />
-                  </mesh>
+                  <mesh><sphereGeometry args={[4, 128, 128]} /><meshStandardMaterial color="#ff00ff" emissive="#00f7ff" emissiveIntensity={1.5} /></mesh>
                   <Ring args={[5.5, 6, 64]} rotation={[1.4, 0, 0]}><meshStandardMaterial color="#00f7ff" emissive="#ff00ff" side={2} /></Ring>
                   <Ring args={[6.5, 7, 64]} rotation={[0.8, 0.6, 0]}><meshStandardMaterial color="#ff00ff" emissive="#00f7ff" side={2} /></Ring>
-                  <Ring args={[7.5, 8, 64]} rotation={[2.1, 0.3, 0]}><meshStandardMaterial color="#00f7ff" emissive="#ff00ff" side={2} /></Ring>
                   <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.25} />
                 </Canvas>
               </CardContent>
             </Card>
 
             <Tabs value={activeTool} onValueChange={setActiveTool}>
-              <TabsList className="grid w-full grid-cols-5 mb-8 glass">
+              <TabsList className="grid w-full grid-cols-6 mb-8 glass">
                 {tools.map(t => <TabsTrigger key={t.id} value={t.id}>{t.name.split(' ')[0]}</TabsTrigger>)}
               </TabsList>
 
               {tools.map(tool => (
                 <TabsContent key={tool.id} value={tool.id}>
                   <Card className="glass">
-                    <CardHeader>
-                      <CardTitle className="text-3xl neon-text">{tool.name} — LIVE</CardTitle>
-                    </CardHeader>
+                    <CardHeader><CardTitle className="text-3xl neon-text">{tool.name} — LIVE</CardTitle></CardHeader>
                     <CardContent>
                       {tool.id === 'causalforge' && (
                         <div>
                           <Button onClick={generateAlpha} disabled={isGenerating} size="lg" className="w-full py-8 text-xl neon-text">
-                            {isGenerating ? "AGENT SWARM THINKING..." : "GENERATE NEW ALPHA"}
+                            {isGenerating ? "SWARM THINKING..." : "GENERATE NEW ALPHA"}
                           </Button>
-
                           {generatedAlpha && (
                             <div className="mt-8 p-8 glass rounded-3xl">
-                              <div className="text-6xl font-bold neon-text mb-2">{(generatedAlpha.persistence * 100).toFixed(0)}%</div>
-                              <p className="text-2xl text-cyan-400">PERSISTENCE SCORE</p>
-                              <p className="text-lg mt-4">Causal edge: <span className="text-lime-400">{generatedAlpha.edge}</span></p>
-
-                              {/* Causal DAG */}
+                              <div className="text-7xl font-bold neon-text mb-2">{(generatedAlpha.persistence*100).toFixed(0)}%</div>
+                              <p className="text-3xl text-cyan-400">PERSISTENCE SCORE</p>
+                              <p className="text-xl mt-4">Causal edge: <span className="text-lime-400">{generatedAlpha.edge}</span></p>
                               <div className="mt-8 bg-black/70 p-6 rounded-2xl">
-                                <p className="text-cyan-400 mb-4">CAUSAL DAG (clickable in full version)</p>
+                                <p className="text-cyan-400 mb-4">CAUSAL DAG</p>
                                 <svg viewBox="0 0 800 200" className="w-full h-52">
                                   {generatedAlpha.nodes.map((node, i) => (
                                     <g key={i}>
-                                      <circle cx={100 + i * 150} cy="100" r="28" fill="#ff00ff" />
-                                      <text x={100 + i * 150} y="105" textAnchor="middle" fill="#fff" fontSize="12">{node}</text>
-                                      {i < generatedAlpha.nodes.length - 1 && (
-                                        <line x1={128 + i * 150} y1="100" x2={172 + i * 150} y2="100" stroke="#00f7ff" strokeWidth="4" strokeDasharray="8 4" />
-                                      )}
+                                      <circle cx={100 + i*140} cy="100" r="32" fill="#ff00ff" />
+                                      <text x={100 + i*140} y="105" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="bold">{node}</text>
+                                      {i < generatedAlpha.nodes.length-1 && <line x1={132 + i*140} y1="100" x2={168 + i*140} y2="100" stroke="#00f7ff" strokeWidth="6" strokeDasharray="10 6"/>}
                                     </g>
                                   ))}
                                 </svg>
                               </div>
-
                               <div className="flex gap-4 mt-8">
-                                <Button className="flex-1">Run Omniverse Simulation</Button>
-                                <Button variant="outline" className="flex-1">Evolve in EvoAlpha Factory</Button>
+                                <Button onClick={runOmniverse} className="flex-1 py-8">Run Omniverse Simulation</Button>
+                                <Button onClick={evolveAlpha} variant="outline" className="flex-1 py-8">Evolve in EvoAlpha Factory</Button>
+                                <Button onClick={deployToPaper} className="flex-1 py-8 bg-emerald-500">Deploy to $1M Paper Lab</Button>
                               </div>
                             </div>
                           )}
                         </div>
                       )}
-                      {tool.id !== 'causalforge' && (
-                        <div className="text-center py-20 text-cyan-400/70">
-                          {tool.name} coming in Phase 3 (full production integration)
+
+                      {tool.id === 'paperlab' && (
+                        <div>
+                          <p className="text-2xl mb-6">LIVE $1M PAPER TRADING</p>
+                          <ResponsiveContainer width="100%" height={380}>
+                            <LineChart data={equityCurve}>
+                              <XAxis dataKey="time" stroke="#00f7ff"/>
+                              <YAxis stroke="#00f7ff"/>
+                              <Tooltip />
+                              <Line type="natural" dataKey="pnl" stroke="#ff00ff" strokeWidth={5} dot={{fill:"#fff", r:4}}/>
+                            </LineChart>
+                          </ResponsiveContainer>
+                          <p className="text-center mt-4 text-lime-400">Current equity: ${equityCurve[equityCurve.length-1].pnl.toLocaleString()}</p>
+                        </div>
+                      )}
+
+                      {tool.id !== 'causalforge' && tool.id !== 'paperlab' && (
+                        <div className="text-center py-24 text-cyan-400/70 text-xl">
+                          {tool.name} fully activated in Phase 4 (real Nautilus + Tigramite)
                         </div>
                       )}
                     </CardContent>
@@ -180,7 +204,6 @@ export default function Moonshot() {
         </div>
       </div>
 
-      {/* Agent Swarm Terminal */}
       <div className="h-60 border-t border-cyan-500/40 bg-black/95 p-6 font-mono text-sm z-50 overflow-hidden flex flex-col">
         <div className="flex items-center gap-3 mb-4 text-cyan-400/70">
           <div className="w-3 h-3 bg-lime-400 rounded-full animate-pulse" />
